@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16
-    container_name: goit-postgres-hw10
+    container_name: goit-postgres-hw12
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -10,11 +10,11 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - postgres_data_hw10:/var/lib/postgresql/data
+      - postgres_data_hw12:/var/lib/postgresql/data
 
   api:
     build: .
-    container_name: goit-api-hw10
+    container_name: goit-api-hw12
     restart: always
     env_file:
       - .env
@@ -24,4 +24,4 @@ services:
       - db
 
 volumes:
-  postgres_data_hw10:
+  postgres_data_hw12:
