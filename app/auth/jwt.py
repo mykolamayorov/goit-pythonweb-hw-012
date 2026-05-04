@@ -1,11 +1,12 @@
 """
 JWT utilities.
 
-This module is responsible for creating and decoding JWT tokens used by the API.
+This module creates and decodes JWT tokens used by the API.
 
 Token types:
+
 - access: short-lived token used for authorization on protected endpoints
-- refresh: long-lived token used to obtain a new access token (rotation supported)
+- refresh: long-lived token used to obtain a new access token (supports rotation)
 - verify: token used for email verification
 - reset: token used for password reset
 
@@ -13,6 +14,7 @@ All secrets and lifetimes are configured through environment variables (.env).
 """
 
 from datetime import datetime, timedelta, timezone
+from uuid import uuid4
 
 from jose import jwt, JWTError
 
@@ -29,14 +31,8 @@ def create_access_token(subject: str) -> str:
     """
     Create a JWT access token.
 
-    Access token is short-lived and is used in Authorization header:
-        Authorization: Bearer <access_token>
-
-    Args:
-        subject: Token subject (user email).
-
-    Returns:
-        Encoded JWT access token string.
+    :param subject: Token subject (user email).
+    :return: Encoded JWT access token string.
     """
     now = datetime.now(timezone.utc)
     expire = now + timedelta(minutes=int(JWT_ACCESS_TOKEN_EXPIRES_MINUTES))
@@ -53,20 +49,18 @@ def create_refresh_token(subject: str) -> str:
     """
     Create a JWT refresh token.
 
-    Refresh token is long-lived and is used to refresh/rotate tokens via:
-        POST /api/auth/refresh
+    Refresh tokens must be unique even if issued within the same second.
+    We include a random ``jti`` claim to guarantee uniqueness (rotation safety).
 
-    Args:
-        subject: Token subject (user email).
-
-    Returns:
-        Encoded JWT refresh token string.
+    :param subject: Token subject (user email).
+    :return: Encoded JWT refresh token string.
     """
     now = datetime.now(timezone.utc)
     expire = now + timedelta(days=int(JWT_REFRESH_TOKEN_EXPIRES_DAYS))
     payload = {
         "sub": subject,
         "type": "refresh",
+        "jti": uuid4().hex,
         "iat": int(now.timestamp()),
         "exp": expire,
     }
@@ -75,16 +69,10 @@ def create_refresh_token(subject: str) -> str:
 
 def create_email_verify_token(subject: str) -> str:
     """
-    Create a JWT email verification token.
+    Create a JWT email verification token (type="verify").
 
-    This token is sent by email after signup and used by:
-        GET /api/auth/verify?token=...
-
-    Args:
-        subject: Token subject (user email).
-
-    Returns:
-        Encoded JWT verify token string.
+    :param subject: Token subject (user email).
+    :return: Encoded JWT verify token string.
     """
     now = datetime.now(timezone.utc)
     expire = now + timedelta(hours=24)
@@ -99,16 +87,10 @@ def create_email_verify_token(subject: str) -> str:
 
 def create_password_reset_token(subject: str) -> str:
     """
-    Create a JWT password reset token (short TTL).
+    Create a JWT password reset token (type="reset") with short TTL.
 
-    This token is sent by email and used by:
-        POST /api/auth/password-reset/confirm
-
-    Args:
-        subject: Token subject (user email).
-
-    Returns:
-        Encoded JWT reset token string.
+    :param subject: Token subject (user email).
+    :return: Encoded JWT reset token string.
     """
     now = datetime.now(timezone.utc)
     expire = now + timedelta(minutes=int(PASSWORD_RESET_TOKEN_EXPIRES_MINUTES))
@@ -123,16 +105,11 @@ def create_password_reset_token(subject: str) -> str:
 
 def decode_token(token: str) -> dict:
     """
-    Decode and validate JWT token.
+    Decode and validate a JWT token.
 
-    Args:
-        token: Encoded JWT string.
-
-    Returns:
-        Decoded JWT payload as dict.
-
-    Raises:
-        ValueError: If token is invalid or cannot be decoded.
+    :param token: Encoded JWT string.
+    :return: Decoded JWT payload as dict.
+    :raises ValueError: If token is invalid or cannot be decoded.
     """
     try:
         return jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])

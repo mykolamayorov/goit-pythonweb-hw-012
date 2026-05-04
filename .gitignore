@@ -1,8 +1,66 @@
-.venv/
-__pycache__/
-*.pyc
+# =========================
+# Environment / secrets
+# =========================
 .env
-.DS_Store
-.idea/
+.env.*
+!.env.example
+
+# Python virtual envs
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache / compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Pytest / Coverage
+# =========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+pytest.xml
+
+# =========================
+# Sphinx documentation build
+# =========================
+docs/_build/
+docs/_build/*
+docs/_static/
+docs/_static/*
+docs/_templates/
+docs/_templates/*
+# (keep docs/*.rst and docs/conf.py tracked)
+
+# =========================
+# IDE / OS
+# =========================
 .vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# =========================
+# Docker / logs
+# =========================
+*.log
+
+# =========================
+# Alembic / migrations cache
+# =========================
 migrations/versions/__pycache__/
+migrations/__pycache__/
+
+# =========================
+# Node / frontend (if ever added)
+# =========================
+node_modules/
+dist/
+build/

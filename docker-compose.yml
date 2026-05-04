@@ -30,6 +30,8 @@ services:
     depends_on:
       - db
       - redis
+    volumes:
+      - ./:/app
 
 volumes:
   postgres_data_hw12:
