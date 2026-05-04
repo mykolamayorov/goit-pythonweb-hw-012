@@ -12,6 +12,13 @@ services:
     volumes:
       - postgres_data_hw12:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7-alpine
+    container_name: goit-redis-hw12
+    restart: always
+    ports:
+      - "6379:6379"
+
   api:
     build: .
     container_name: goit-api-hw12
@@ -22,6 +29,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
 
 volumes:
   postgres_data_hw12:

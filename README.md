@@ -59,3 +59,12 @@ GET /api/contacts/birthdays?days=7
 Authorization: Bearer <access_token>
 Passwords hashed (bcrypt)
 Email must be verified
+
+## Documentation (Sphinx)
+
+Build HTML docs (inside Docker container):
+docker compose exec api rm -rf docs/\_build
+docker compose exec api sphinx-build -b html docs docs/\_build/html
+
+Docs output (inside container):
+docs/\_build/html/index.html

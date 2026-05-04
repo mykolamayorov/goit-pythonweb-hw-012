@@ -6,9 +6,24 @@ alembic
 python-dotenv
 pydantic
 email-validator
+
 passlib[bcrypt]
 bcrypt==4.0.1
 python-jose[cryptography]
 python-multipart
+
 slowapi
 cloudinary
+
+# Redis cache
+redis>=5.0.0
+
+# Testing + coverage
+pytest
+pytest-cov
+httpx
+
+# Sphinx docs
+sphinx
+sphinx-autobuild
+sphinx-rtd-theme
